@@ -203,6 +203,26 @@ class WebhookServer:
         except Exception as e:
             logger.error(f"Token transfer notification failed: {str(e)}")
 
+    async def notify_batch_transfer(self, transfer_data):
+        """Send notification for batch token distribution"""
+        
+        text = (
+            f"📦 Batch Token Distribution:\n"
+            f"Total Transfers: {len(transfer_data['transfers'])}\n"
+            f"Details:\n"
+        )
+        for transfer in transfer_data['transfers']:
+            text += (
+                f"- {transfer['amount']} {transfer['token']['symbol']} from "
+                f"{transfer['from'][:10]}... to {transfer['to'][:10]}...\n"
+            )
+        text += (
+            f"Time: {format_time_ago(transfer_data['timestamp'])}\n"
+            f"Signature: {transfer_data['signature']}"
+        )
+        await self.send_notification(text)
+
+
     async def notify_swap(self, swap_data):
         """Swap notification with contract address"""
         try:
